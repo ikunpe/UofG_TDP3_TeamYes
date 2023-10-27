@@ -1,0 +1,38 @@
+#include "mbed.h"
+#include <algorithm>
+
+// Define L298N motor control pins
+PwmOut motorPinR1(PTC3);  // Adjust these pin assignments as per your connection
+PwmOut motorPinR2(PTC4);
+PwmOut motorPinL1(PTC5);
+PwmOut motorPinL2(PTC6);
+PwmOut motorR(PTC7);//set D7 as the output pin which can pwmout
+PwmOut motorL(PTC8);
+
+void moveForward() {
+    motorPinR1 = 1;
+    motorPinR2 = 0;
+    motorPinL1 = 1;
+    motorPinL2 = 0;
+}
+
+void stopMotor() {
+    motorPinR1 = 0;
+    motorPinR2 = 0;
+    motorPinL1 = 0;
+    motorPinL2 = 0;
+}
+
+void move_backward() {
+    motorPinR1 = 0;
+    motorPinR2 = 1;
+    motorPinL1 = 0;
+    motorPinL2 = 1;
+}
+
+
+int main() {
+
+
+
+}
