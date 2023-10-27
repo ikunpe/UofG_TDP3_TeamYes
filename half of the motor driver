@@ -1,38 +1,79 @@
 #include "mbed.h"
-#include <algorithm>
 
 // Define L298N motor control pins
-PwmOut motorPinR1(PTC3);  // Adjust these pin assignments as per your connection
-PwmOut motorPinR2(PTC4);
-PwmOut motorPinL1(PTC5);
-PwmOut motorPinL2(PTC6);
-PwmOut motorR(PTC7);//set D7 as the output pin which can pwmout
-PwmOut motorL(PTC8);
+PwmOut PwmR(PTA4);//control right 
+DigitalOut Rforward(PTC3);  // Adjust these pin assignments as per your connection
+DigitalOut Rbackward(PTC4);
 
-void moveForward() {
-    motorPinR1 = 1;
-    motorPinR2 = 0;
-    motorPinL1 = 1;
-    motorPinL2 = 0;
+PwmOut PwmL(PTA5);//control left
+DigitalOut Lforward(PTC5);
+DigitalOut Lbackward(PTC6);
+
+void control_R(float dutycycle, bool direction) {
+    PwmR = dutycycle;
+    if (direction==1){
+    Rforward = 1;
+    Rbackward = 0;
+    }
+    else{
+    Rforward = 0;
+    Rbackward = 1;
+    }
 }
 
 void stopMotor() {
-    motorPinR1 = 0;
-    motorPinR2 = 0;
-    motorPinL1 = 0;
-    motorPinL2 = 0;
+    Rforward = 0;
+    Rbackward = 0;
+    Lforward = 0;
+    Lbackward = 0;
 }
 
-void move_backward() {
-    motorPinR1 = 0;
-    motorPinR2 = 1;
-    motorPinL1 = 0;
-    motorPinL2 = 1;
+void control_L(float dutycycle, bool direction) {
+    PwmL = dutycycle;
+    if(direction==1){
+    Lforward = 1;
+    Lbackward = 0;
+    }
+    else{
+    Lforward = 0;
+    Lbackward = 1;
+    }
 }
+
 
 
 int main() {
+    while(1){
+        control_R(0.5,1);
+        control_L(0.5,1);
+        wait(5);//start speed 0.5
 
+        control_R(1,1);
+        control_L(1,1);
+        wait(5);//speed up
+
+        stopMotor();
+
+        control_R(0.5,0);
+        control_L(0.5,0);
+        wait(5);//backward
+
+        control_R(1,0);
+        control_L(1,0);
+        wait(5);//backward speed up
+
+        stopMotor();
+
+        control_R(0.5,1);
+        control_L(1,1);
+        wait(5);//turn right
+
+        control_R(1,1);
+        control_L(0.5,1);
+        wait(5);//turn left     
+
+        stopMotor();
+    }
 
 
 }
