@@ -1,11 +1,11 @@
 #include "mbed.h"
  //sensors
-DigitalOut S1(PTD1);
-DigitalOut S2(PTD3);
-DigitalOut S3(PTD2);
-DigitalOut S4(PTD0);
-DigitalOut S5(PTD5);
-DigitalOut S6(PTA13);
+DigitalIn S1(PTD1);
+DigitalIn S2(PTD3);
+DigitalIn S3(PTD2);
+DigitalIn S4(PTD0);
+DigitalIn S5(PTD5);
+DigitalIn S6(PTA13);
     //Right
 PwmOut PwmR(PTA12);
 DigitalOut Rforward(PTA2);
@@ -14,6 +14,7 @@ DigitalOut Rbackward(PTD4);
 PwmOut PwmL(PTA1);
 DigitalOut Lforward(PTA5);
 DigitalOut Lbackward(PTA4);
+DigitalOut magnet(PTE31);
 
 void controlLeft(float dutycycle, bool direction) {
     if (PwmL != dutycycle){
@@ -43,18 +44,28 @@ void controlRight(float dutycycle, bool direction) {
 }    
 
 void on_line (){
-  controlLeft(0.5,1);
-  controlRight(0.5,1);
+  controlLeft(0.15,1);
+  controlRight(0.15,1);
 }
 
 void turn_left (){
-  controlLeft(0.2,0);
-  controlRight(0.8,1);
+  controlLeft(0.1,0);
+  controlRight(0.4,1);
+}
+
+void turn_left_slow (){
+  controlLeft(0.1,0);
+  controlRight(0.2,1);
 }
 
 void turn_right(){
-   controlLeft(0.8,1);
-  controlRight(0.2,0);
+   controlLeft(0.4,1);
+  controlRight(0.1,0);
+}
+
+void turn_right_slow(){
+   controlLeft(0.2,1);
+  controlRight(0.1,0);
 }
 
 void find_line(){
@@ -63,68 +74,68 @@ void find_line(){
 }
 
 void corner_L(){
-  controlLeft(0.3,0);
-  controlRight(0.3,0);
-  wait_us(1000);
-  controlLeft(0.3,0);
-  controlRight(0.8,1);
+  controlLeft(0.2,0);
+  controlRight(0.5,1);
 }
 
 void corner_R(){
-  controlLeft(0.3,0);
-  controlRight(0.3,0);
-  wait_us(1000);
-  controlLeft(0.8,1);
-  controlRight(0.3,0);
+  controlLeft(0.5,1);
+  controlRight(0.2,0);
 }
 
+
 int main(){
-    int cases;
-if (S1==0 && S2==0 && S3==0 && S4==0 && S5==0 && S6==0 ){
+    magnet=1;
+    int cases = 0;
+    while(1){
+if (S2==1 && S3==1 && S4==1 && S5==1){
     cases=1;
-    return cases;
-}else if (S1==0 && S2==0 && S3==1 && S4==1 && S5==0 && S6==0){
+}else if (S2==1 && S3==0 && S4==1 && S5==1){
     cases=2;
-    return cases;
-}else if (S1==0 && S2==1 && S3==1 && S4==0 && S5==0 && S6==0){
+}else if (S2==0 && S3==1 && S4==1 && S5==1){
     cases=3;
-    return cases;
-}else if (S1==0 && S2==0 && S3==0 && S4==1 && S5==1 && S6==0){
+}else if (S2==1 && S3==1 && S4==0 && S5==1){
     cases=4;
-    return cases;
-}else if (S1==1 && S2==1 && S3==1 && S4==0 && S5==0 && S6==0){
+}else if (S2==1 && S3==1 && S4==1 && S5==0){
     cases=5;
-    return cases;
-}else if (S1==0 && S2==0 && S3==0 && S4==1 && S5==1 && S6==1){
+}else if (S2==1 && S3==1 && S4==0 && S5==0){
     cases=6;
-    return cases;
+}else if (S2==0 && S3==0 && S4==1 && S5==1){
+    cases=7;
 }
 switch(cases){
     case 1:
-    find_line();
+    on_line();
     break;
 
     case 2:
-    on_line();
+    turn_left_slow();
     break;
 
     case 3:
     turn_left();
+    wait_us(1000);
     break;
 
     case 4:
-    turn_right();
+    turn_right_slow();
     break;
 
     case 5:
-    corner_L();
+    turn_right();
+    wait_us(1000);
     break;
 
     case 6:
+    corner_L();
+    break;
+
+    case 7:
     corner_R();
     break;
 
-}
-
+  }
+ wait_us(10000);
+ }
 
 }
