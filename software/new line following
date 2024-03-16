@@ -43,29 +43,39 @@ void controlRight(float dutycycle, bool direction) {
     }
 }    
 
-void on_line (){
-  controlLeft(0.15,1);
-  controlRight(0.15,1);
+void go_forward (){
+  controlLeft(0.5,1);
+  controlRight(0.5,1);
 }
 
-void turn_left (){
-  controlLeft(0.1,0);
+void back_forward_R (){
+  controlLeft(0.8,0);
   controlRight(0.4,1);
 }
 
+void back_forward_L (){
+  controlLeft(0.4,1);
+  controlRight(0.8,0);
+}
+
+void turn_left (){
+  controlLeft(0.5,0);
+  controlRight(0.8,1);
+}
+
 void turn_left_slow (){
-  controlLeft(0.1,0);
-  controlRight(0.2,1);
+  controlLeft(0.45,0);
+  controlRight(0.8,1);
 }
 
 void turn_right(){
-   controlLeft(0.4,1);
-  controlRight(0.1,0);
+   controlLeft(0.8,1);
+  controlRight(0.5,0);
 }
 
 void turn_right_slow(){
-   controlLeft(0.2,1);
-  controlRight(0.1,0);
+   controlLeft(0.8,1);
+  controlRight(0.45,0);
 }
 
 void find_line(){
@@ -74,38 +84,46 @@ void find_line(){
 }
 
 void corner_L(){
-  controlLeft(0.2,0);
-  controlRight(0.5,1);
+  controlLeft(0.6,0);
+  controlRight(0.6,1);
 }
 
 void corner_R(){
-  controlLeft(0.5,1);
-  controlRight(0.2,0);
+  controlLeft(0.6,1);
+  controlRight(0.6,0);
 }
 
+void stop(){
+    PwmR = 0;
+    PwmL = 0;
+}
 
 int main(){
     magnet=1;
     int cases = 0;
     while(1){
-if (S2==1 && S3==1 && S4==1 && S5==1){
+if (S1==1 && S2==1 && S5==1 && S6==1){
     cases=1;
-}else if (S2==1 && S3==0 && S4==1 && S5==1){
+}else if (S1==1 && S2==0 && S3==1 && S4==1 && S5==1 && S6==1){
     cases=2;
-}else if (S2==0 && S3==1 && S4==1 && S5==1){
+}else if (S1==0 && S2==1 && S3==1 && S4==1 && S5==1 && S6==1){
     cases=3;
-}else if (S2==1 && S3==1 && S4==0 && S5==1){
+}else if (S1==1 && S2==1 && S3==1 && S4==1 && S5==0 && S6==1){
     cases=4;
-}else if (S2==1 && S3==1 && S4==1 && S5==0){
+}else if (S1==1 && S2==1 && S3==1 && S4==1 && S5==1 && S6==0){
     cases=5;
-}else if (S2==1 && S3==1 && S4==0 && S5==0){
+}else if (S1==1 && S2==0 && S3==0 && S4==1 && S5==1 && S6==1){
     cases=6;
-}else if (S2==0 && S3==0 && S4==1 && S5==1){
+}else if (S1==1 && S2==1 && S3==1 && S4==0 && S5==0 && S6==1){
     cases=7;
+}else if (S1==0 && S2==0 && S3==1 && S4==1 && S5==1 && S6==1){
+    cases=8;
+}else if (S1==1 && S2==1 && S3==1 && S4==1 && S5==0 && S6==0){
+    cases=9;
 }
 switch(cases){
     case 1:
-    on_line();
+    go_forward();
     break;
 
     case 2:
@@ -114,7 +132,6 @@ switch(cases){
 
     case 3:
     turn_left();
-    wait_us(1000);
     break;
 
     case 4:
@@ -123,17 +140,39 @@ switch(cases){
 
     case 5:
     turn_right();
-    wait_us(1000);
     break;
 
     case 6:
-    corner_L();
+    back_forward_L();
+    wait_us(100000);
+    turn_left();
     break;
 
     case 7:
+    back_forward_R();
+    wait_us(100000);
+    turn_right();
+    break;
+
+    case 8:
+    stop();
+    wait_us(1000000);
+    find_line();
+    wait_us(100000);
+    corner_L();
+    break;
+
+    case 9:
+    stop();
+    wait_us(1000000);
+    find_line();
+    wait_us(100000);
     corner_R();
     break;
 
+ default:
+    find_line();
+    break;
   }
  wait_us(10000);
  }
